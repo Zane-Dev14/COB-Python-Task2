@@ -5,25 +5,27 @@ from tkinter import ttk
 
 def fetch_data(key, city):
     url = f"http://api.weatherapi.com/v1/current.json?key={key}&q={city}&aqi=no"
-    response=req.get(url)
+    response = req.get(url)
     data = response.json()
     return data
 
-def display_weather(data):
-    for i in data["current"].values():
-
-        print(i)
-def display_current_data():
+def display_weather():
+    city = city_in.get()
+    key = "0ee51b4c06dd49b3b80163216231910"
+    weather_data = fetch_data(key, city)
     selected_option = option_var.get()
     data = weather_data["current"]
-    
+    temp_c_label.config(text=f"Temperature: {data['temp_c']} °C")
+    temp_f_label.config(text=f"Temperature: {data['temp_f']} °F")
+    time_label.config(text=f"Time in {city} : {data['last_updated']}")
     if selected_option == "Temperature (°C)":
-        result_label.config(text=f"Temperature: {data['temp_c']} °C")
+        temp_c_label.config(text=f"Temperature: {data['temp_c']} °C")
     elif selected_option == "Temperature (°F)":
-        result_label.config(text=f"Temperature: {data['temp_f']} °F")
-    # Add more options and data display here
+        temp_f_label.config(text=f"Temperature: {data['temp_f']} °F")
+
 root = tk.Tk()
 root.title("Weather Data Viewer")
+root.geometry("400x300")  # Increase the size
 
 option_var = tk.StringVar(value="Temperature (°C)")
 
@@ -33,28 +35,29 @@ frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
 options = [
     "Temperature (°C)",
     "Temperature (°F)",
+    "Time",
 ]
 
+city_label = ttk.Label(frame, text="Enter City:")
+city_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+
+city_in = ttk.Entry(frame, font=("Roboto", 12)) 
+city_in.grid(row=0, column=1, padx=5, pady=5, sticky="w")
+
 option_label = ttk.Label(frame, text="Select Data:")
-option_label.grid(row=0, column=0, padx=5, pady=5)
+option_label.grid(row=1, column=0, padx=5, pady=5, sticky="w")
 
 option_menu = ttk.Combobox(frame, textvariable=option_var, values=options)
-option_menu.grid(row=0, column=1, padx=5, pady=5)
+option_menu.grid(row=1, column=1, padx=5, pady=5, sticky="w")
 
-fetch_button = ttk.Button(frame, text="Fetch Data", command=display_current_data)
-fetch_button.grid(row=0, column=2, padx=5, pady=5)
+fetch_button = ttk.Button(frame, text="Fetch Data", command=display_weather)
+fetch_button.grid(row=1, column=2, padx=5, pady=5, sticky="w")
 
-result_label = ttk.Label(frame, text="", font=("Arial", 12))
-result_label.grid(row=1, column=0, columnspan=3, padx=5, pady=5)
+temp_c_label = ttk.Label(frame, text="", font=("Roboto", 14))  
+temp_c_label.grid(row=2, column=0, columnspan=3, padx=5, pady=5, sticky="w")
+temp_f_label = ttk.Label(frame, text="", font=("Roboto", 14))  
+temp_f_label.grid(row=3, column=0, columnspan=3, padx=5, pady=5, sticky="w")
+time_label = ttk.Label(frame, text="", font=("Roboto", 14))  
+time_label.grid(row=4, column=0, columnspan=3, padx=5, pady=5, sticky="w")
 
 root.mainloop()
-
-
-
-if __name__ == "__main__":
-    key="0ee51b4c06dd49b3b80163216231910"
-    city = input("Enter a city: ")
-    weather_data = fetch_data(key, city)
-    display_weather(weather_data)
-
-
